@@ -11,14 +11,14 @@ import org.junit.Before;
 
 import java.util.Map;
 
-public class ConcreteVerticesGraphTest {
+public class ConcreteEdgesGraphTest {
     
     private Graph<String> graph;
 
     // Set up a new empty graph before each test
     @Before
     public void setUp() {
-        graph = new ConcreteVerticesGraph<>();
+        graph = new ConcreteEdgesGraph<>();
     }
 
     // Test that a new graph has no vertices
