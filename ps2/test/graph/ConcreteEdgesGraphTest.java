@@ -8,20 +8,17 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 import java.util.Map;
-import java.util.Set;
 
-public class ConcreteEdgesGraphTest {
+public class ConcreteVerticesGraphTest {
     
     private Graph<String> graph;
 
     // Set up a new empty graph before each test
     @Before
     public void setUp() {
-        graph = new ConcreteEdgesGraph<>();
+        graph = new ConcreteVerticesGraph<>();
     }
 
     // Test that a new graph has no vertices
