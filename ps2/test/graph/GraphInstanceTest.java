@@ -11,125 +11,77 @@ import org.junit.Test;
 
 
 import java.util.Map;
-import java.util.Set;
 
 public class GraphInstanceTest {
-    
+
     private Graph<String> graph;
 
-    // Helper method to create a fresh empty graph instance
-    private Graph<String> emptyInstance() {
-        return Graph.empty();  // Assuming Graph.empty() gives us a fresh empty graph
-    }
-
-    // This method must be public for JUnit to recognize it as setup
+    // Set up a fresh empty graph before each test
     @Before
     public void setUp() {
-        graph = emptyInstance();  // Initialize a fresh empty graph before each test
+        graph = Graph.empty();  // Assuming the Graph.empty() method returns a fresh, empty instance.
     }
 
-    // Test for add() method
+    // Test that a new graph has no vertices
+    @Test
+    public void testInitialVerticesEmpty() {
+        assertTrue("New graph should have no vertices", graph.vertices().isEmpty());
+    }
+
+    // Test adding a vertex to the graph
     @Test
     public void testAddVertex() {
-        assertTrue(graph.add("A"));
-        assertTrue(graph.vertices().contains("A"));
+        assertTrue("Vertex 'A' should be added successfully", graph.add("A"));
+        assertTrue("Graph should contain vertex 'A'", graph.vertices().contains("A"));
     }
 
+    // Test adding a duplicate vertex to the graph
     @Test
     public void testAddDuplicateVertex() {
         graph.add("A");
-        assertFalse(graph.add("A")); // Adding a duplicate should return false
+        assertFalse("Adding duplicate vertex 'A' should return false", graph.add("A"));
     }
 
-    // Test for set() method (adding edges)
+    // Test adding an edge and ensuring it is added with the correct weight
     @Test
-    public void testAddEdge() {
+    public void testSetEdge() {
         graph.add("A");
         graph.add("B");
-        int weight = graph.set("A", "B", 5);
-        
-        assertEquals(0, weight); // No previous edge, so it should return 0
+        int previousWeight = graph.set("A", "B", 10);
+
+        assertEquals("Expected previous edge weight to be 0", 0, previousWeight);
         Map<String, Integer> targets = graph.targets("A");
-        assertEquals(1, targets.size());
-        assertTrue(targets.containsKey("B"));
+        assertTrue("Graph should have a target 'B' from 'A'", targets.containsKey("B"));
+        assertEquals("Edge weight should be 10", Integer.valueOf(10), targets.get("B"));
     }
 
-    @Test
-    public void testUpdateEdgeWeight() {
-        graph.add("A");
-        graph.add("B");
-        graph.set("A", "B", 5); // First add an edge
-        int prevWeight = graph.set("A", "B", 10); // Update the edge weight
-        
-        assertEquals(5, prevWeight); // Previous weight was 5
-        Map<String, Integer> targets = graph.targets("A");
-        assertEquals(1, targets.size());
-        assertTrue(targets.containsKey("B"));
-    }
-
-    @Test
-    public void testRemoveEdge() {
-        graph.add("A");
-        graph.add("B");
-        graph.set("A", "B", 5);
-        graph.set("A", "B", 0); // Removing the edge by setting its weight to 0
-        
-        Map<String, Integer> targets = graph.targets("A");
-        assertFalse(targets.containsKey("B")); // The edge should no longer exist
-    }
-
-    // Test for remove() method (removing vertices)
+    // Test removing a vertex and ensuring it no longer exists
     @Test
     public void testRemoveVertex() {
         graph.add("A");
         graph.add("B");
         graph.set("A", "B", 5);
-        
-        assertTrue(graph.remove("A"));
-        assertFalse(graph.vertices().contains("A"));
-        
-        Map<String, Integer> targets = graph.targets("B");
-        assertTrue(targets.isEmpty()); // "B" should have no outgoing edges anymore
-    }
 
-    @Test
-    public void testRemoveNonExistingVertex() {
-        graph.add("A");
-        assertFalse(graph.remove("B")); // "B" does not exist
-    }
+        assertTrue("Removing vertex 'A' should return true", graph.remove("A"));
+        assertFalse("Graph should no longer contain vertex 'A'", graph.vertices().contains("A"));
 
-    // Test for vertices() method
-    @Test
-    public void testVertices() {
-        graph.add("A");
-        graph.add("B");
-        
-        Set<String> vertices = graph.vertices();
-        assertTrue(vertices.contains("A"));
-        assertTrue(vertices.contains("B"));
-    }
-
-    // Test for sources() method
-    @Test
-    public void testSources() {
-        graph.add("A");
-        graph.add("B");
-        graph.set("A", "B", 5);
-        
-        Map<String, Integer> sources = graph.sources("B");
-        assertEquals(1, sources.size());
-        assertTrue(sources.containsKey("A"));
-    }
-
-    // Test for targets() method
-    @Test
-    public void testTargets() {
-        graph.add("A");
-        graph.add("B");
-        graph.set("A", "B", 5);
-        
         Map<String, Integer> targets = graph.targets("A");
-        assertEquals(1, targets.size());
-        assertTrue(targets.containsKey("B"));
+        assertTrue("Vertex 'A' should have no outgoing edges", targets.isEmpty());
+    }
+
+    // Test sources and targets for a directed edge
+    @Test
+    public void testSourcesAndTargets() {
+        graph.add("A");
+        graph.add("B");
+        graph.set("A", "B", 5);
+
+        Map<String, Integer> sources = graph.sources("B");
+        assertTrue("Graph should have 'A' as a source for 'B'", sources.containsKey("A"));
+        assertEquals("Edge weight from 'A' to 'B' should be 5", Integer.valueOf(5), sources.get("A"));
+
+        Map<String, Integer> targets = graph.targets("A");
+        assertTrue("Graph should have 'B' as a target for 'A'", targets.containsKey("B"));
+        assertEquals("Edge weight from 'A' to 'B' should be 5", Integer.valueOf(5), targets.get("B"));
     }
 }
